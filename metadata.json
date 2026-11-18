@@ -1,0 +1,6 @@
+{
+  "name": "Sonora",
+  "description": "Reprodutor de músicas locais e offline para Android com biblioteca por faixas, álbuns, artistas, pastas, playlists e player em segundo plano.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
