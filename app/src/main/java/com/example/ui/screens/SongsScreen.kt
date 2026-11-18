@@ -65,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.R
+import com.example.ads.SongsBannerAd
 import com.example.model.Song
 import com.example.model.SortOrder
 import com.example.ui.components.AlbumArtwork
@@ -80,6 +81,7 @@ fun SongsScreen(
     isPlaying: Boolean,
     showPermissionRationale: Boolean = false,
     isPermissionPermanentlyDenied: Boolean = false,
+    hasFloatingMiniPlayer: Boolean = false,
     onRequestPermission: () -> Unit,
     onOpenAppSettings: () -> Unit = {},
     onRescan: () -> Unit,
@@ -95,55 +97,53 @@ fun SongsScreen(
     onShowDetails: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (!libraryState.hasPermission) {
-        PermissionWelcomeState(
-            showRationale = showPermissionRationale,
-            isPermanentlyDenied = isPermissionPermanentlyDenied,
-            onRequestPermission = onRequestPermission,
-            onOpenAppSettings = onOpenAppSettings,
-            onOpenAudioFile = onOpenAudioFile,
-            modifier = modifier
-        )
-        return
-    }
-
-    if (libraryState.isScanning && libraryState.allSongs.isEmpty()) {
+    Column(modifier = modifier.fillMaxSize()) {
         Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                Text(
-                    text = "Buscando músicas no celular…",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+            if (!libraryState.hasPermission) {
+                PermissionWelcomeState(
+                    showRationale = showPermissionRationale,
+                    isPermanentlyDenied = isPermissionPermanentlyDenied,
+                    onRequestPermission = onRequestPermission,
+                    onOpenAppSettings = onOpenAppSettings,
+                    onOpenAudioFile = onOpenAudioFile,
+                    modifier = Modifier.fillMaxSize()
                 )
-            }
-        }
-        return
-    }
+            } else if (libraryState.isScanning && libraryState.allSongs.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            text = "Buscando músicas no celular…",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else if (libraryState.allSongs.isEmpty()) {
+                EmptyLibraryState(
+                    onRescan = onRescan,
+                    onOpenAudioFile = onOpenAudioFile,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                var sortMenuExpanded by remember { mutableStateOf(false) }
 
-    if (libraryState.allSongs.isEmpty()) {
-        EmptyLibraryState(
-            onRescan = onRescan,
-            onOpenAudioFile = onOpenAudioFile,
-            modifier = modifier
-        )
-        return
-    }
-
-    var sortMenuExpanded by remember { mutableStateOf(false) }
-
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("songs_list"),
-        contentPadding = PaddingValues(bottom = 110.dp)
-    ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("songs_list"),
+                    contentPadding = PaddingValues(bottom = 24.dp)
+                ) {
         // Header
         item(key = "header") {
             Row(
@@ -406,6 +406,20 @@ fun SongsScreen(
                 )
             }
         }
+                }
+            }
+        }
+
+        SongsBannerAd(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 8.dp,
+                    bottom = if (hasFloatingMiniPlayer) 96.dp else 8.dp
+                )
+        )
     }
 }
 

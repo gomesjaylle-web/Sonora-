@@ -85,6 +85,10 @@ class ExampleRobolectricTest {
             "ca-app-pub-6285196863394658/5561786505",
             com.example.ads.RewardedAdManager.REWARDED_AD_UNIT_ID
         )
+        assertEquals(
+            "ca-app-pub-6285196863394658/6206005525",
+            com.example.ads.SONGS_BANNER_AD_UNIT_ID
+        )
     }
 
     @Test
@@ -108,6 +112,7 @@ class ExampleRobolectricTest {
 
         composeTestRule.waitForIdle()
         assertTrue(preloaded)
+        composeTestRule.onNodeWithTag("songs_banner_ad").assertDoesNotExist()
         composeTestRule.onNodeWithTag("explore_rewarded_ad_btn").assertIsDisplayed().performClick()
         assertTrue(watched)
     }
@@ -138,6 +143,7 @@ class ExampleRobolectricTest {
         }
 
         composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("songs_banner_ad").assertIsDisplayed()
         composeTestRule.onNodeWithTag("grant_audio_permission_btn")
             .performScrollTo()
             .assertIsDisplayed()

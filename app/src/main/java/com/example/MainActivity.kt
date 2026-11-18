@@ -368,6 +368,7 @@ fun SonoraApp(viewModel: SonoraViewModel) {
                                 isPlaying = playbackState.isPlaying,
                                 showPermissionRationale = showAudioRationale,
                                 isPermissionPermanentlyDenied = isPermissionPermanentlyDenied,
+                                hasFloatingMiniPlayer = useNavigationRail && playbackState.currentSong != null,
                                 onRequestPermission = ::requestAudioPermissions,
                                 onOpenAppSettings = ::openAppSettings,
                                 onRescan = { viewModel.scanLibrary() },
