@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.data.local.FavoriteSongEntity
@@ -62,7 +63,7 @@ class ExampleRobolectricTest {
     }
 
     @Test
-    fun `manifest declares READ_MEDIA_AUDIO permission`() {
+    fun `manifest declares READ_MEDIA_AUDIO and AdMob metadata`() {
         val packageInfo = context.packageManager.getPackageInfo(
             context.packageName,
             PackageManager.GET_PERMISSIONS
@@ -70,6 +71,45 @@ class ExampleRobolectricTest {
         val permissions = packageInfo.requestedPermissions?.toList().orEmpty()
         assertTrue(permissions.contains(Manifest.permission.READ_MEDIA_AUDIO))
         assertTrue(permissions.contains(Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK))
+        assertTrue(permissions.contains(Manifest.permission.INTERNET))
+
+        val appInfo = context.packageManager.getApplicationInfo(
+            context.packageName,
+            PackageManager.GET_META_DATA
+        )
+        assertEquals(
+            "ca-app-pub-6285196863394658~1679603005",
+            appInfo.metaData.getString("com.google.android.gms.ads.APPLICATION_ID")
+        )
+        assertEquals(
+            "ca-app-pub-6285196863394658/5561786505",
+            com.example.ads.RewardedAdManager.REWARDED_AD_UNIT_ID
+        )
+    }
+
+    @Test
+    fun `explore screen preloads ad and triggers watch callback on click`() {
+        var preloaded = false
+        var watched = false
+        composeTestRule.setContent {
+            SonoraTheme {
+                com.example.ui.screens.ExploreScreen(
+                    libraryState = LibraryUiState(hasPermission = false),
+                    rewardedAdStatus = com.example.ads.RewardedAdStatus.READY,
+                    onExploreOpened = { preloaded = true },
+                    onWatchRewardedAd = { watched = true },
+                    onSelectTab = {},
+                    onAlbumClick = {},
+                    onArtistClick = {},
+                    onFolderClick = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        assertTrue(preloaded)
+        composeTestRule.onNodeWithTag("explore_rewarded_ad_btn").assertIsDisplayed().performClick()
+        assertTrue(watched)
     }
 
     @Test
@@ -98,7 +138,10 @@ class ExampleRobolectricTest {
         }
 
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("grant_audio_permission_btn").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("grant_audio_permission_btn")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
         assertTrue(requested)
     }
 
@@ -132,7 +175,10 @@ class ExampleRobolectricTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("permission_notice_card").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("open_app_settings_btn").assertIsDisplayed().performClick()
+        composeTestRule.onNodeWithTag("open_app_settings_btn")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performClick()
         assertTrue(settingsOpened)
     }
 

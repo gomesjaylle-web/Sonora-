@@ -43,6 +43,7 @@ googleid = "1.1.1"
 media3 = "1.6.1"
 kotlinxSerializationJson = "1.8.1"
 guava = "33.4.0-android"
+playServicesAds = "23.6.0"
 
 
 [libraries]
@@ -102,6 +103,7 @@ androidx-media3-session = { group = "androidx.media3", name = "media3-session", 
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 
 [plugins]

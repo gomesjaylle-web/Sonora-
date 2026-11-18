@@ -120,4 +120,7 @@ class MusicRepository(
 
     suspend fun setHasRequestedAudioPermission(requested: Boolean) =
         preferencesRepository.setHasRequestedAudioPermission(requested)
+
+    suspend fun setSupporter(isSupporter: Boolean) =
+        preferencesRepository.setSupporter(isSupporter)
 }

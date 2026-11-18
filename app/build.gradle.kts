@@ -112,6 +112,7 @@ dependencies {
   implementation(libs.androidx.media3.common)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.guava)
+  implementation(libs.play.services.ads)
   // implementation(libs.converter.moshi)
   // implementation(libs.firebase.ai)
   // Uncomment to use Firestore:

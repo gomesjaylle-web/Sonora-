@@ -20,7 +20,8 @@ data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.DARK,
     val includeShortAudio: Boolean = false,
     val sortOrder: SortOrder = SortOrder.TITLE_ASC,
-    val hasRequestedAudioPermission: Boolean = false
+    val hasRequestedAudioPermission: Boolean = false,
+    val isSupporter: Boolean = false
 )
 
 class PreferencesRepository(private val context: Context) {
@@ -30,6 +31,7 @@ class PreferencesRepository(private val context: Context) {
         val INCLUDE_SHORT_AUDIO = booleanPreferencesKey("include_short_audio")
         val SORT_ORDER = stringPreferencesKey("sort_order")
         val HAS_REQUESTED_AUDIO_PERMISSION = booleanPreferencesKey("has_requested_audio_permission")
+        val IS_SUPPORTER = booleanPreferencesKey("is_supporter")
     }
 
     val preferences: Flow<UserPreferences> = context.sonoraDataStore.data.map { prefs ->
@@ -43,12 +45,14 @@ class PreferencesRepository(private val context: Context) {
 
         val includeShortAudio = prefs[Keys.INCLUDE_SHORT_AUDIO] ?: false
         val hasRequestedAudioPermission = prefs[Keys.HAS_REQUESTED_AUDIO_PERMISSION] ?: false
+        val isSupporter = prefs[Keys.IS_SUPPORTER] ?: false
 
         UserPreferences(
             themeMode = themeMode,
             includeShortAudio = includeShortAudio,
             sortOrder = sortOrder,
-            hasRequestedAudioPermission = hasRequestedAudioPermission
+            hasRequestedAudioPermission = hasRequestedAudioPermission,
+            isSupporter = isSupporter
         )
     }
 
@@ -66,5 +70,9 @@ class PreferencesRepository(private val context: Context) {
 
     suspend fun setHasRequestedAudioPermission(requested: Boolean) {
         context.sonoraDataStore.edit { it[Keys.HAS_REQUESTED_AUDIO_PERMISSION] = requested }
+    }
+
+    suspend fun setSupporter(isSupporter: Boolean) {
+        context.sonoraDataStore.edit { it[Keys.IS_SUPPORTER] = isSupporter }
     }
 }

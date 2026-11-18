@@ -39,4 +39,9 @@
     <string name="queue_title">Fila de reprodução</string>
     <string name="sleep_timer_title">Despertador musical</string>
     <string name="playback_speed_title">Velocidade</string>
+    <string name="support_ad_title">Apoiar o Sonora assistindo a um vídeo</string>
+    <string name="support_ad_unlocked_title">Apoiador Sonora ativo</string>
+    <string name="support_ad_subtitle">Assista a um vídeo curto opcional sem interromper suas músicas.</string>
+    <string name="support_ad_cta">Assistir vídeo</string>
+    <string name="support_ad_cta_again">Assistir novamente</string>
 </resources>

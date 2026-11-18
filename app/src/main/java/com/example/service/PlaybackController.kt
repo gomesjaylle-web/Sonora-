@@ -190,6 +190,23 @@ class PlaybackController(
         }
     }
 
+    fun pause() {
+        val controller = mediaController ?: return
+        if (controller.isPlaying) {
+            controller.pause()
+        }
+    }
+
+    fun resume() {
+        val controller = mediaController ?: return
+        if (!controller.isPlaying) {
+            if (controller.playbackState == Player.STATE_IDLE && controller.mediaItemCount > 0) {
+                controller.prepare()
+            }
+            controller.play()
+        }
+    }
+
     fun togglePlayPause() {
         val controller = mediaController ?: return
         if (controller.isPlaying) {

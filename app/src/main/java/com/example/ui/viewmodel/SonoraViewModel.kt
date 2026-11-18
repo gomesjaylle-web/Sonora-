@@ -230,6 +230,17 @@ class SonoraViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun markSupporterUnlocked() {
+        viewModelScope.launch {
+            repository.setSupporter(true)
+            _snackbarEvents.tryEmit("Obrigado por apoiar o Sonora! Conteúdo extra desbloqueado.")
+        }
+    }
+
+    fun showMessage(message: String) {
+        _snackbarEvents.tryEmit(message)
+    }
+
     fun playCollection(songs: List<Song>, startIndex: Int = 0, shuffle: Boolean = false) {
         if (songs.isEmpty()) return
         playbackController.playSongs(songs, startIndex, shuffle)

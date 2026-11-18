@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,17 +49,26 @@ import com.example.model.MusicFolder
 import com.example.ui.components.AlbumArtwork
 import com.example.ui.viewmodel.LibraryUiState
 
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.R
+import com.example.ads.RewardedAdStatus
 
 @Composable
 fun ExploreScreen(
     libraryState: LibraryUiState,
     isPermissionPermanentlyDenied: Boolean = false,
+    rewardedAdStatus: RewardedAdStatus = RewardedAdStatus.IDLE,
+    onExploreOpened: () -> Unit = {},
+    onWatchRewardedAd: () -> Unit = {},
     onRequestPermission: () -> Unit = {},
     onOpenAppSettings: () -> Unit = {},
     onSelectTab: (ExploreTab) -> Unit,
@@ -67,6 +77,10 @@ fun ExploreScreen(
     onFolderClick: (MusicFolder) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(Unit) {
+        onExploreOpened()
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -105,6 +119,15 @@ fun ExploreScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        SupportAdCard(
+            isSupporter = libraryState.preferences.isSupporter,
+            adStatus = rewardedAdStatus,
+            onWatchClick = onWatchRewardedAd,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -341,6 +364,101 @@ private fun FolderListCard(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+private fun SupportAdCard(
+    isSupporter: Boolean,
+    adStatus: RewardedAdStatus,
+    onWatchClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.72f),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = if (isSupporter) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer
+                },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = if (isSupporter) Icons.Filled.AutoAwesome else Icons.Filled.PlayCircle,
+                        contentDescription = null,
+                        tint = if (isSupporter) {
+                            MaterialTheme.colorScheme.secondary
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(
+                        if (isSupporter) R.string.support_ad_unlocked_title else R.string.support_ad_title
+                    ),
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = when (adStatus) {
+                        RewardedAdStatus.LOADING -> "Carregando vídeo em segundo plano…"
+                        RewardedAdStatus.FAILED -> "Vídeo indisponível no momento · toque para tentar"
+                        else -> stringResource(R.string.support_ad_subtitle)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            FilledTonalButton(
+                onClick = onWatchClick,
+                enabled = adStatus != RewardedAdStatus.SHOWING,
+                shape = RoundedCornerShape(50),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .testTag("explore_rewarded_ad_btn")
+            ) {
+                if (adStatus == RewardedAdStatus.LOADING) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(
+                            if (isSupporter) R.string.support_ad_cta_again else R.string.support_ad_cta
+                        ),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
         }
     }
 }

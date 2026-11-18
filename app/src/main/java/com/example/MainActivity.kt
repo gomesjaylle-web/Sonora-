@@ -98,12 +98,15 @@ import com.example.ui.screens.ExploreScreen
 import com.example.ui.screens.PlaylistsScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.SongsScreen
+import com.example.ads.RewardedAdManager
 import com.example.ui.theme.SonoraTheme
 import com.example.ui.viewmodel.SonoraViewModel
+import com.google.android.gms.ads.MobileAds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) {}
         enableEdgeToEdge()
         setContent {
             val viewModel: SonoraViewModel = viewModel()
@@ -134,6 +137,8 @@ fun SonoraApp(viewModel: SonoraViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
+    val rewardedAdManager = remember { RewardedAdManager() }
+    val rewardedAdStatus by rewardedAdManager.status.collectAsStateWithLifecycle()
 
     var showNowPlaying by rememberSaveable { mutableStateOf(false) }
     var showQueueSheet by remember { mutableStateOf(false) }
@@ -383,6 +388,23 @@ fun SonoraApp(viewModel: SonoraViewModel) {
                             ExploreScreen(
                                 libraryState = libraryState,
                                 isPermissionPermanentlyDenied = isPermissionPermanentlyDenied,
+                                rewardedAdStatus = rewardedAdStatus,
+                                onExploreOpened = { rewardedAdManager.preload(context) },
+                                onWatchRewardedAd = {
+                                    val hostActivity = activity
+                                    if (hostActivity != null) {
+                                        rewardedAdManager.showAd(
+                                            activity = hostActivity,
+                                            wasMusicPlaying = playbackState.isPlaying,
+                                            onPauseMusic = { viewModel.playbackController.pause() },
+                                            onResumeMusic = { viewModel.playbackController.resume() },
+                                            onRewardEarned = { viewModel.markSupporterUnlocked() },
+                                            onAdNotReady = {
+                                                viewModel.showMessage("Preparando o vídeo, tente novamente em alguns segundos.")
+                                            }
+                                        )
+                                    }
+                                },
                                 onRequestPermission = ::requestAudioPermissions,
                                 onOpenAppSettings = ::openAppSettings,
                                 onSelectTab = viewModel::selectExploreTab,
