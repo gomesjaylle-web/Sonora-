@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Sonora</string>
+    <string name="brand_title">Sonora Músicas</string>
+    <string name="brand_credit">Por J.Gomez</string>
     <string name="nav_songs">Músicas</string>
     <string name="nav_explore">Explorar</string>
     <string name="nav_playlists">Playlists</string>

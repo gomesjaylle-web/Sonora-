@@ -241,8 +241,13 @@ fun SettingsScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "Sonora Player Offline",
+                        text = stringResource(R.string.brand_title),
                         style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = stringResource(R.string.brand_credit),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "Reprodução local com Media3 ExoPlayer em segundo plano, suporte a controles na tela de bloqueio, pastas e playlists offline.",

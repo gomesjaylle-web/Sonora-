@@ -153,12 +153,12 @@ fun SongsScreen(
             ) {
                 Column {
                     Text(
-                        text = stringResource(R.string.app_name),
+                        text = stringResource(R.string.brand_title),
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "${libraryState.allSongs.size} faixas no aparelho",
+                        text = "${stringResource(R.string.brand_credit)} · ${libraryState.allSongs.size} faixas no aparelho",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -496,6 +496,13 @@ private fun PermissionWelcomeState(
             )
 
             Text(
+                text = "${stringResource(R.string.brand_title)} · ${stringResource(R.string.brand_credit)}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
                 text = stringResource(R.string.permission_title),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
@@ -600,6 +607,12 @@ private fun EmptyLibraryState(
                     .fillMaxWidth()
                     .height(190.dp)
                     .clip(RoundedCornerShape(24.dp))
+            )
+            Text(
+                text = "${stringResource(R.string.brand_title)} · ${stringResource(R.string.brand_credit)}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
             )
             Text(
                 text = stringResource(R.string.empty_library_title),
